@@ -1,34 +1,30 @@
 #include <iostream>
 #include "AffinityPropagation.h"
 #include <fstream>
-#include <vector>
 
-using namespace std;
 
-std::vector<std::vector<float>>
-load_feature(
-             const char * filename,
-             const int feature_num,
-             const int feature_len) {
-    using std::vector;
-    std::ifstream is(filename, std::ifstream::binary);
+std::vector<std::vector<double>> load_feature(const std::string& filename, const int row, const int col)
+{
+    std::ifstream is(filename);
     if (!is.is_open()) throw "file cannot be opened";
-    vector<vector<float>> feature_arr(feature_num, vector<float>(feature_len, 0.));
 
-    for (int fid = 0; fid < feature_num; ++ fid) {
-        for (int idx = 0; idx < feature_len; ++ idx) {
-            is >> feature_arr[fid][idx];
+    std::vector<std::vector<double>> matrix(row, std::vector<double>(col, 0.));
+
+    for (int fid = 0; fid < row; ++ fid) {
+        for (int idx = 0; idx < col; ++ idx) {
+            is >> matrix[fid][idx];
         }
     }
 
-    return feature_arr;
+    return matrix;
 }
 
 int main() {
-    auto feature_arr = load_feature("demo.txt", 6, 5);
+    auto affinity_matrix = load_feature("/home/terbe/R/affinity-propagation/affinity_matrix.txt", 115, 115);
+
 
     AP::AffinityPropagation ap;
-    ap.fit(feature_arr);
+    ap.fit(affinity_matrix);
 
     for (auto e: ap.m_labels) {
         std::cout << e << std::endl;
